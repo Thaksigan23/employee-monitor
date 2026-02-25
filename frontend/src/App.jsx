@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchActivities } from "./services/api";
-
+import Heatmap from "./components/Heatmap";
 function StatusBadge({ status }) {
   const colors = {
     Active: "bg-green-500",
@@ -58,6 +58,8 @@ function App() {
             ))}
           </tbody>
         </table>
+
+        <Heatmap activities={activities} />
       </div>
     </div>
   );
