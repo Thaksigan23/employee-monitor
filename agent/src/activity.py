@@ -1,31 +1,64 @@
-from pynput import keyboard
+from pynput import mouse, keyboard
+import threading
 import time
 
-_last_input_time = time.time()
-_click_count = 0
+# Shared state
+_state = {
+    "mouse_moved": False,
+    "mouse_clicked": False,
+    "key_pressed": False,
+}
 
+_lock = threading.Lock()
+
+
+# ---- Mouse handlers ----
 def on_move(x, y):
-    global _last_input_time
-    _last_input_time = time.time()
+    with _lock:
+        _state["mouse_moved"] = True
+
 
 def on_click(x, y, button, pressed):
-    global _last_input_time, _click_count
     if pressed:
-        _click_count += 1
-        _last_input_time = time.time()
+        with _lock:
+            _state["mouse_clicked"] = True
+            _state["mouse_moved"] = True
 
+
+# ---- Keyboard handler ----
 def on_press(key):
-    global _last_input_time
-    _last_input_time = time.time()
+    with _lock:
+        _state["key_pressed"] = True
 
+
+# ---- Start listeners ----
 def start_listeners():
-    # Disable mouse listener due to Windows pynput bug
-    keyboard.Listener(on_press=on_press).start()
+    try:
+        mouse.Listener(on_move=on_move, on_click=on_click).start()
+    except Exception as e:
+        print("⚠️ Mouse listener failed to start:", e)
 
-def get_activity_status():
-    global _click_count
-    now = time.time()
-    active = (now - _last_input_time) < 60  # active in last 60 sec
-    clicks = _click_count
-    _click_count = 0  # reset after reading
-    return active, clicks
+    try:
+        keyboard.Listener(on_press=on_press).start()
+    except Exception as e:
+        print("⚠️ Keyboard listener failed to start:", e)
+
+
+# ---- Snapshot API ----
+def get_activity_snapshot():
+    """
+    Returns and resets activity flags.
+    """
+    with _lock:
+        snapshot = {
+            "mouse_moved": _state["mouse_moved"],
+            "mouse_clicked": _state["mouse_clicked"],
+            "key_pressed": _state["key_pressed"],
+        }
+
+        # Reset after reading
+        _state["mouse_moved"] = False
+        _state["mouse_clicked"] = False
+        _state["key_pressed"] = False
+
+    return snapshot
