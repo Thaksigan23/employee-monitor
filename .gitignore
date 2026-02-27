@@ -1,4 +1,19 @@
-node_modules
+# Root
 .env
-__pycache__
-*.pyc
+agent_token.json
+
+# Backend
+backend/.env
+backend/node_modules/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Agent
+agent/venv/
+agent/__pycache__/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchActivities } from "../services/api";
 
-// Reuse a nice badge UI
+// Reuse badge style
 function StatusBadge({ status }) {
   const styles = {
     Active: "bg-green-100 text-green-700 border border-green-300",
@@ -24,8 +24,8 @@ export default function Activity() {
   const [activities, setActivities] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // Safe user parsing
   const user = useMemo(() => {
@@ -45,7 +45,7 @@ export default function Activity() {
       setActivities(data);
       setError("");
     } catch {
-      setError("Failed to load activities");
+      setError("Failed to load activity logs");
     } finally {
       setLoading(false);
     }
@@ -53,59 +53,57 @@ export default function Activity() {
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(loadData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Role-based + search + status filtering
   const filteredActivities = useMemo(() => {
-    let data = activities;
+    let list = activities;
 
-    // If not admin, only show own data
+    // Employee can only see their own
     if (!isAdmin) {
       if (!user?.email && !user?.id) return [];
-      data = data.filter(
+      list = list.filter(
         (a) => a.employeeId === user.email || a.employeeId === user.id
       );
     }
 
     // Status filter
     if (statusFilter !== "ALL") {
-      data = data.filter((a) => a.status === statusFilter);
+      list = list.filter((a) => a.status === statusFilter);
     }
 
     // Search filter
-    if (search.trim() !== "") {
+    if (search.trim()) {
       const q = search.toLowerCase();
-      data = data.filter(
+      list = list.filter(
         (a) =>
           a.employeeId.toLowerCase().includes(q) ||
           (a.windowTitle || "").toLowerCase().includes(q)
       );
     }
 
-    return data;
-  }, [activities, isAdmin, user, statusFilter, search]);
+    return list;
+  }, [activities, search, statusFilter, isAdmin, user]);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-3xl font-bold">Activity Logs</h1>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search */}
           <input
             type="text"
-            placeholder="Search by employee or window..."
+            placeholder="Search employee or window..."
+            className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
 
-          {/* Status Filter */}
           <select
+            className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option value="ALL">All Status</option>
             <option value="Active">Active</option>
@@ -115,23 +113,16 @@ export default function Activity() {
         </div>
       </div>
 
-      {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-lg">
-          {error}
-        </div>
-      )}
+      {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg">{error}</div>}
 
-      {/* Table Card */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow border dark:border-gray-700 overflow-hidden">
         <div className="p-4 border-b dark:border-gray-700 font-semibold">
-          All Activities
+          Logs ({filteredActivities.length})
         </div>
 
-        {loading && (
-          <div className="p-6 text-center text-gray-500">Loading activities...</div>
-        )}
-
-        {!loading && (
+        {loading ? (
+          <div className="p-6 text-center text-gray-500">Loading...</div>
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
@@ -168,7 +159,7 @@ export default function Activity() {
                 {filteredActivities.length === 0 && (
                   <tr>
                     <td colSpan="4" className="p-6 text-center text-gray-500">
-                      No activities found
+                      No results found
                     </td>
                   </tr>
                 )}

@@ -17,6 +17,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
+
   const user = await User.findOne({ email });
   if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
@@ -25,7 +26,7 @@ exports.login = async (req, res) => {
 
   const token = jwt.sign(
     { id: user._id, role: user.role, email: user.email },
-    JWT_SECRET,
+    process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 

@@ -1,11 +1,29 @@
 import requests
+from auth import load_token
 
-BACKEND_URL = "http://localhost:5000/api/activity"
+API_URL = "http://localhost:5000/api/activity"
 
-def send_activity(payload: dict):
+
+def send_activity(payload):
+    auth_data = load_token()
+
+    if not auth_data:
+        print("❌ No token found. Please login first.")
+        return
+
+    token = auth_data["token"]
+
     try:
-        r = requests.post(BACKEND_URL, json=payload, timeout=5)
-        return r.status_code == 201
+        response = requests.post(
+            API_URL,
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {token}"
+            }
+        )
+
+        if response.status_code != 200:
+            print("❌ Failed to send:", response.text)
+
     except Exception as e:
-        print("❌ Failed to send activity:", e)
-        return False
+        print("❌ Connection error:", e)

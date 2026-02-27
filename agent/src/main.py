@@ -1,12 +1,12 @@
 import time
 from datetime import datetime, timedelta
 
+from auth import login, load_token
 from activity import start_listeners, get_activity_snapshot
 from window import get_active_window_title
 from privacy import mask_if_private
 from api import send_activity
 
-EMPLOYEE_ID = "emp001"
 
 # ---- Tunable thresholds ----
 IDLE_THRESHOLD_MINUTES = 5
@@ -15,7 +15,19 @@ POLL_INTERVAL_SECONDS = 60
 
 
 def main():
+    # 🔐 Ensure logged in first
+    auth_data = load_token()
+
+    if not auth_data:
+        auth_data = login()
+        if not auth_data:
+            print("❌ Cannot start agent without login.")
+            return
+
+    user = auth_data["user"]
+    print(f"👤 Logged in as: {user['email']}")
     print("🟢 Agent started...")
+
     start_listeners()
 
     now = datetime.now()
@@ -58,17 +70,16 @@ def main():
         if idle_time > timedelta(minutes=IDLE_THRESHOLD_MINUTES):
             status = "Idle"
         else:
-            # Suspicious: movement but no real interaction for long time
+            # Suspicious: no interaction for long time
             if (
                 since_click > timedelta(minutes=SUSPICIOUS_THRESHOLD_MINUTES)
                 and since_key > timedelta(minutes=SUSPICIOUS_THRESHOLD_MINUTES)
                 and since_window_change > timedelta(minutes=SUSPICIOUS_THRESHOLD_MINUTES)
-                and snapshot["mouse_moved"]
             ):
                 status = "Suspicious"
 
+        # ✅ IMPORTANT: No employeeId anymore
         payload = {
-            "employeeId": EMPLOYEE_ID,
             "status": status,
             "windowTitle": title,
             "isPrivate": is_private,
