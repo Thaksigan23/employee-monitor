@@ -4,17 +4,33 @@ const morgan = require("morgan");
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan("dev"));
 
-// Routes
 app.use("/api/activity", require("./routes/activity.routes"));
 
-// Test route
 app.get("/", (req, res) => {
-  res.send("Employee Monitor API is running 🚀");
+  res.send("Employee Monitor API is running");
+});
+
+app.get("/health", (req, res) => {
+  res.json({ ok: true });
 });
 
 module.exports = app;

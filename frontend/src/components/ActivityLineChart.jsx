@@ -36,8 +36,7 @@ export default function ActivityLineChart({ activities }) {
       <h2 className="text-lg font-semibold mb-3">Activity Over Time</h2>
 
       <div style={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer>
-          <LineChart data={data}>
+<ResponsiveContainer width="100%" height="100%">          <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="time" />
             <YAxis allowDecimals={false} />
