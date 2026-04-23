@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchActivities } from "../services/api";
 
-// Reuse badge style
+function getEmployeeLabel(activity) {
+  return activity.user?.email || "Unknown employee";
+}
+
 function StatusBadge({ status }) {
   const styles = {
     Active: "bg-green-100 text-green-700 border border-green-300",
@@ -27,17 +30,6 @@ export default function Activity() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Safe user parsing
-  const user = useMemo(() => {
-    try {
-      return JSON.parse(localStorage.getItem("user") || "{}");
-    } catch {
-      return {};
-    }
-  }, []);
-
-  const isAdmin = user?.role === "admin";
-
   async function loadData() {
     try {
       setLoading(true);
@@ -60,50 +52,40 @@ export default function Activity() {
   const filteredActivities = useMemo(() => {
     let list = activities;
 
-    // Employee can only see their own
-    if (!isAdmin) {
-      if (!user?.email && !user?.id) return [];
-      list = list.filter(
-        (a) => a.employeeId === user.email || a.employeeId === user.id
-      );
-    }
-
-    // Status filter
     if (statusFilter !== "ALL") {
-      list = list.filter((a) => a.status === statusFilter);
+      list = list.filter((activity) => activity.status === statusFilter);
     }
 
-    // Search filter
     if (search.trim()) {
-      const q = search.toLowerCase();
+      const query = search.toLowerCase();
       list = list.filter(
-        (a) =>
-          a.employeeId.toLowerCase().includes(q) ||
-          (a.windowTitle || "").toLowerCase().includes(q)
+        (activity) =>
+          getEmployeeLabel(activity).toLowerCase().includes(query) ||
+          (activity.windowTitle || "").toLowerCase().includes(query)
       );
     }
 
     return list;
-  }, [activities, search, statusFilter, isAdmin, user]);
+  }, [activities, search, statusFilter]);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <h1 className="text-3xl font-bold">Activity Logs</h1>
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <input
             type="text"
             placeholder="Search employee or window..."
             className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
           />
 
           <select
             className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(event) => setStatusFilter(event.target.value)}
           >
             <option value="ALL">All Status</option>
             <option value="Active">Active</option>
@@ -134,24 +116,24 @@ export default function Activity() {
                 </tr>
               </thead>
               <tbody>
-                {filteredActivities.map((a) => (
+                {filteredActivities.map((activity) => (
                   <tr
-                    key={a._id}
+                    key={activity._id}
                     className={`border-t dark:border-gray-700 transition ${
-                      a.status === "Suspicious"
+                      activity.status === "Suspicious"
                         ? "bg-red-50 dark:bg-red-900/20"
                         : "hover:bg-gray-100 dark:hover:bg-gray-700/60"
                     }`}
                   >
-                    <td className="p-3 font-medium">{a.employeeId}</td>
+                    <td className="p-3 font-medium">{getEmployeeLabel(activity)}</td>
                     <td className="p-3">
-                      <StatusBadge status={a.status} />
+                      <StatusBadge status={activity.status} />
                     </td>
                     <td className="p-3 text-gray-600 dark:text-gray-300 truncate max-w-md">
-                      {a.windowTitle}
+                      {activity.windowTitle}
                     </td>
                     <td className="p-3 text-gray-500">
-                      {new Date(a.createdAt).toLocaleString()}
+                      {new Date(activity.createdAt).toLocaleString()}
                     </td>
                   </tr>
                 ))}

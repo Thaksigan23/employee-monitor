@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { fetchActivities, clearActivities } from "../services/api";
+import { fetchActivities, clearActivities, fetchAppUsage } from "../services/api";
 import Heatmap from "./Heatmap";
 import ActivityLineChart from "./ActivityLineChart";
 
@@ -105,6 +105,7 @@ export default function AppDashboard() {
   const [selectedEmployee, setSelectedEmployee] = useState("ALL");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [appUsage, setAppUsage] = useState([]);
 
   const user = useMemo(() => {
     try {
@@ -133,6 +134,12 @@ export default function AppDashboard() {
 
       setActivities(data);
       setError("");
+
+      // Also load app usage
+      try {
+        const usage = await fetchAppUsage();
+        setAppUsage(usage);
+      } catch {}
 
     } catch {
       setError("Failed to load data");
@@ -365,6 +372,46 @@ export default function AppDashboard() {
         </div>
 
       </div>
+
+      {/* App Usage Breakdown */}
+      {appUsage.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+          <h2 className="font-semibold mb-4 text-lg">📱 App Usage Breakdown</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Bar Chart */}
+            <div className="space-y-3">
+              {appUsage.slice(0, 8).map((app, i) => {
+                const maxCount = appUsage[0]?.count || 1;
+                const pct = Math.round((app.count / maxCount) * 100);
+                const colors = [
+                  "bg-blue-500", "bg-indigo-500", "bg-purple-500", "bg-pink-500",
+                  "bg-cyan-500", "bg-teal-500", "bg-orange-500", "bg-green-500",
+                ];
+                return (
+                  <div key={i}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-medium truncate mr-2">{app.app}</span>
+                      <span className="text-gray-400 flex-shrink-0">{app.count} logs</span>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                      <div className={`h-3 rounded-full ${colors[i % colors.length]} transition-all duration-500`}
+                        style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Summary */}
+            <div className="flex flex-col items-center justify-center">
+              <div className="text-5xl font-bold text-blue-500">{appUsage.length}</div>
+              <div className="text-gray-500 mt-1">Unique Apps Tracked</div>
+              <div className="mt-4 text-sm text-gray-400">
+                Total logs: {appUsage.reduce((s, a) => s + a.count, 0)}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
 

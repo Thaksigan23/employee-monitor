@@ -3,23 +3,20 @@ const router = express.Router();
 const Activity = require("../models/Activity");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
-/* ===========================
-   GET Activities (Dashboard)
-=========================== */
+
+const VALID_STATUSES = ["Active", "Idle", "Suspicious"];
+
 router.get("/", auth, async (req, res) => {
   try {
     const { userId, start, end } = req.query;
+    const filter = {};
 
-    let filter = {};
-
-    // 🔐 Role-based filtering
     if (req.user.role !== "admin") {
-      filter.user = req.user._id;   // FIXED
+      filter.user = req.user._id;
     } else if (userId) {
       filter.user = userId;
     }
 
-    // 📅 Date filtering
     if (start || end) {
       filter.createdAt = {};
 
@@ -37,45 +34,51 @@ router.get("/", auth, async (req, res) => {
       .populate("user", "email role");
 
     res.json(activities);
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-
-/* ===========================
-   POST Activity (Agent)
-=========================== */
 router.post("/", auth, async (req, res) => {
   try {
     const { status, windowTitle, isPrivate } = req.body;
 
-    if (!status) {
-      return res.status(400).json({ error: "Status is required" });
+    if (!VALID_STATUSES.includes(status)) {
+      return res.status(400).json({ error: "Invalid status value" });
     }
 
     const activity = await Activity.create({
-      user: req.user._id,   // 🔥 VERY IMPORTANT FIX
+      user: req.user._id,
       status,
       windowTitle,
-      isPrivate,
+      isPrivate: Boolean(isPrivate),
     });
 
     res.json(activity);
-
   } catch (error) {
     console.error("Activity error:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// 🔥 DELETE activities (Admin only)
+router.delete("/:id", auth, admin, async (req, res) => {
+  try {
+    const deleted = await Activity.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Activity not found" });
+    }
+
+    res.json({ message: "Activity deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.delete("/", auth, admin, async (req, res) => {
   try {
     const { userId } = req.query;
-
-    let filter = {};
+    const filter = {};
 
     if (userId) {
       filter.user = userId;
@@ -87,7 +90,6 @@ router.delete("/", auth, admin, async (req, res) => {
       message: "Activity logs cleared",
       deleted: result.deletedCount,
     });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

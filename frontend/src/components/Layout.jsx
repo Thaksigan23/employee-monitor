@@ -48,7 +48,12 @@ export default function Layout({ children }) {
         <nav className="space-y-2 flex-1">
           <MenuItem path="/dashboard" icon="📊" label="Dashboard" />
           <MenuItem path="/activity" icon="🕒" label="Activity" />
+          <MenuItem path="/timesheets" icon="📑" label="Timesheets" />
+          <MenuItem path="/chat" icon="💬" label="Chat" />
+          <MenuItem path="/leaves" icon="🏖️" label="Leaves" />
+          <MenuItem path="/announcements" icon="📢" label="Announcements" />
           {isAdmin && <MenuItem path="/users" icon="👥" label="Users" />}
+          {isAdmin && <MenuItem path="/audit" icon="🔍" label="Audit Logs" />}
           <MenuItem path="/settings" icon="⚙️" label="Settings" />
         </nav>
 

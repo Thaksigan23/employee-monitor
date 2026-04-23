@@ -53,7 +53,7 @@ export default function Settings() {
           <div>
             <span className="text-gray-500">Role:</span>{" "}
             <span className="font-medium capitalize">
-              {user.role || "user"}
+              {user.role || "employee"}
             </span>
           </div>
         </div>
