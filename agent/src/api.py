@@ -1,7 +1,11 @@
+import os
 import requests
 from auth import load_token
+from dotenv import load_dotenv
 
-BASE_URL = "http://localhost:5000/api"
+load_dotenv()
+
+BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
 API_URL = f"{BASE_URL}/activity"
 TASKS_URL = f"{BASE_URL}/tasks"
 

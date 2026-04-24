@@ -1,10 +1,14 @@
+import os
 import requests
 import json
-import os
 import tkinter as tk
 from tkinter import simpledialog, messagebox
+from dotenv import load_dotenv
 
-API_URL = "http://localhost:5000/api/auth/login"
+load_dotenv()
+
+BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
+API_URL = f"{BASE_URL}/auth/login"
 TOKEN_FILE = "agent_token.json"
 
 

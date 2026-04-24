@@ -377,3 +377,175 @@ export async function fetchAppUsage() {
   if (!res.ok) throw new Error("Failed to fetch app usage");
   return res.json();
 }
+
+// ==========================
+// SHIFTS
+// ==========================
+
+export async function fetchShifts() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/shifts`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch shifts");
+  return res.json();
+}
+
+export async function createShift(data) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/shifts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || "Failed to create shift");
+  return result;
+}
+
+export async function updateShift(id, data) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/shifts/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || "Failed to update shift");
+  return result;
+}
+
+export async function deleteShift(id) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/shifts/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to delete shift");
+  return res.json();
+}
+
+export async function assignShiftUsers(id, userIds) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/shifts/${id}/assign`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ userIds }),
+  });
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || "Failed to assign users");
+  return result;
+}
+
+// ==========================
+// BLOCKED APPS
+// ==========================
+
+export async function fetchBlockedApps() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/blocked-apps`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch blocked apps");
+  return res.json();
+}
+
+export async function addBlockedApp(name, keywords, severity) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/blocked-apps`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ name, keywords, severity }),
+  });
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || "Failed to add blocked app");
+  return result;
+}
+
+export async function removeBlockedApp(id) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/blocked-apps/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to remove blocked app");
+  return res.json();
+}
+
+export async function scanViolations() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/blocked-apps/scan`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || "Failed to scan violations");
+  return result;
+}
+
+export async function fetchViolations() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/blocked-apps/violations`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch violations");
+  return res.json();
+}
+
+export async function acknowledgeViolation(id) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/blocked-apps/violations/${id}/acknowledge`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to acknowledge violation");
+  return res.json();
+}
+
+// ==========================
+// LEADERBOARD
+// ==========================
+
+export async function fetchLeaderboard(period = "week") {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/analytics/leaderboard?period=${period}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch leaderboard");
+  return res.json();
+}
+
+// ==========================
+// TRENDS
+// ==========================
+
+export async function fetchTrends(weeks = 4) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/analytics/trends?weeks=${weeks}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch trends");
+  return res.json();
+}
+
+// ==========================
+// PERFORMANCE REPORT
+// ==========================
+
+export async function fetchPerformanceReport(userId = null, start = null, end = null) {
+  const token = localStorage.getItem("token");
+  const params = new URLSearchParams();
+  if (userId) params.append("userId", userId);
+  if (start) params.append("start", start);
+  if (end) params.append("end", end);
+
+  let url = `${API_BASE}/api/analytics/report`;
+  if (params.toString()) url += `?${params.toString()}`;
+
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch report");
+  return res.json();
+}
+

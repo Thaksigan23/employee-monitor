@@ -11,6 +11,8 @@ const chatRoutes = require("./routes/chat.routes");
 const leaveRoutes = require("./routes/leave.routes");
 const announcementRoutes = require("./routes/announcement.routes");
 const auditRoutes = require("./routes/audit.routes");
+const shiftRoutes = require("./routes/shift.routes");
+const blockedAppRoutes = require("./routes/blockedapp.routes");
 
 const PORT = process.env.PORT || 5000;
 
@@ -23,6 +25,8 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/leaves", leaveRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/audit", auditRoutes);
+app.use("/api/shifts", shiftRoutes);
+app.use("/api/blocked-apps", blockedAppRoutes);
 
 connectDB();
 

@@ -49,9 +49,13 @@ export default function Layout({ children }) {
           <MenuItem path="/dashboard" icon="📊" label="Dashboard" />
           <MenuItem path="/activity" icon="🕒" label="Activity" />
           <MenuItem path="/timesheets" icon="📑" label="Timesheets" />
+          <MenuItem path="/shifts" icon="📅" label="Shifts" />
+          <MenuItem path="/leaderboard" icon="🏆" label="Leaderboard" />
+          <MenuItem path="/reports" icon="📈" label="Reports" />
           <MenuItem path="/chat" icon="💬" label="Chat" />
           <MenuItem path="/leaves" icon="🏖️" label="Leaves" />
           <MenuItem path="/announcements" icon="📢" label="Announcements" />
+          {isAdmin && <MenuItem path="/blocked-apps" icon="🚫" label="Blocked Apps" />}
           {isAdmin && <MenuItem path="/users" icon="👥" label="Users" />}
           {isAdmin && <MenuItem path="/audit" icon="🔍" label="Audit Logs" />}
           <MenuItem path="/settings" icon="⚙️" label="Settings" />

@@ -15,6 +15,10 @@ import Chat from "./pages/Chat";
 import Leaves from "./pages/Leaves";
 import Announcements from "./pages/Announcements";
 import AuditLogs from "./pages/AuditLogs";
+import Shifts from "./pages/Shifts";
+import BlockedApps from "./pages/BlockedApps";
+import Leaderboard from "./pages/Leaderboard";
+import Reports from "./pages/Reports";
 import Layout from "./components/Layout";
 
 function RequireAuth({ children }) {
@@ -37,110 +41,20 @@ function AppRoutes() {
         <Route path="/login" element={<Login onLogin={() => window.location.href = "/dashboard"} />} />
         <Route path="/register" element={<Register onRegister={() => window.location.href = "/dashboard"} />} />
 
+        <Route path="/dashboard" element={<RequireAuth><Layout><Dashboard /></Layout></RequireAuth>} />
+        <Route path="/activity" element={<RequireAuth><Layout><Activity /></Layout></RequireAuth>} />
+        <Route path="/settings" element={<RequireAuth><Layout><Settings /></Layout></RequireAuth>} />
+        <Route path="/timesheets" element={<RequireAuth><Layout><Timesheets /></Layout></RequireAuth>} />
+        <Route path="/chat" element={<RequireAuth><Layout><Chat /></Layout></RequireAuth>} />
+        <Route path="/leaves" element={<RequireAuth><Layout><Leaves /></Layout></RequireAuth>} />
+        <Route path="/announcements" element={<RequireAuth><Layout><Announcements /></Layout></RequireAuth>} />
+        <Route path="/shifts" element={<RequireAuth><Layout><Shifts /></Layout></RequireAuth>} />
+        <Route path="/leaderboard" element={<RequireAuth><Layout><Leaderboard /></Layout></RequireAuth>} />
+        <Route path="/reports" element={<RequireAuth><Layout><Reports /></Layout></RequireAuth>} />
 
-
-        <Route
-          path="/dashboard"
-          element={
-            <RequireAuth>
-              <Layout>
-                <Dashboard />
-              </Layout>
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/activity"
-          element={
-            <RequireAuth>
-              <Layout>
-                <Activity />
-              </Layout>
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/settings"
-          element={
-            <RequireAuth>
-              <Layout>
-                <Settings />
-              </Layout>
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/timesheets"
-          element={
-            <RequireAuth>
-              <Layout>
-                <Timesheets />
-              </Layout>
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/users"
-          element={
-            <RequireAuth>
-              <RequireAdmin>
-                <Layout>
-                  <Users />
-                </Layout>
-              </RequireAdmin>
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/chat"
-          element={
-            <RequireAuth>
-              <Layout>
-                <Chat />
-              </Layout>
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/leaves"
-          element={
-            <RequireAuth>
-              <Layout>
-                <Leaves />
-              </Layout>
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/announcements"
-          element={
-            <RequireAuth>
-              <Layout>
-                <Announcements />
-              </Layout>
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/audit"
-          element={
-            <RequireAuth>
-              <RequireAdmin>
-                <Layout>
-                  <AuditLogs />
-                </Layout>
-              </RequireAdmin>
-            </RequireAuth>
-          }
-        />
+        <Route path="/users" element={<RequireAuth><RequireAdmin><Layout><Users /></Layout></RequireAdmin></RequireAuth>} />
+        <Route path="/audit" element={<RequireAuth><RequireAdmin><Layout><AuditLogs /></Layout></RequireAdmin></RequireAuth>} />
+        <Route path="/blocked-apps" element={<RequireAuth><RequireAdmin><Layout><BlockedApps /></Layout></RequireAdmin></RequireAuth>} />
       </Routes>
     </BrowserRouter>
   );
