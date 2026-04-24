@@ -26,6 +26,19 @@ __pycache__/
 *.pyc
 
 # =========================
+# AGENT
+# =========================
+agent/.env
+agent/agent_token.json
+agent/build/
+agent/dist/
+
+# =========================
+# UPLOADS (screenshots)
+# =========================
+backend/uploads/
+
+# =========================
 # OS
 # =========================
 .DS_Store

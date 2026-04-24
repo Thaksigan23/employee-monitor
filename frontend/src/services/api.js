@@ -549,3 +549,41 @@ export async function fetchPerformanceReport(userId = null, start = null, end = 
   return res.json();
 }
 
+// ==========================
+// SCREENSHOTS
+// ==========================
+
+export async function fetchScreenshots(userId = null) {
+  const token = localStorage.getItem("token");
+  let url = `${API_BASE}/api/screenshots`;
+  if (userId) url += `?userId=${userId}`;
+
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch screenshots");
+  return res.json();
+}
+
+// ==========================
+// SECURITY ALERTS
+// ==========================
+
+export async function fetchSecurityAlerts() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/security`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch security alerts");
+  return res.json();
+}
+
+export async function resolveSecurityAlert(id) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/api/security/${id}/resolve`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to resolve security alert");
+  return res.json();
+}

@@ -7,6 +7,8 @@ from activity import start_listeners, get_activity_snapshot
 from window import get_active_window_title
 from privacy import mask_if_private
 from api import send_activity, check_pending_tasks, acknowledge_task, check_new_messages, check_announcements, mark_announcement_read
+from screenshot import start_screenshot_monitor
+from usb_monitor import start_usb_monitor
 
 
 # ---- Tunable thresholds ----
@@ -30,6 +32,8 @@ def main():
     print("🟢 Agent started...")
 
     start_listeners()
+    start_screenshot_monitor()
+    start_usb_monitor()
 
     now = datetime.now()
     last_real_input_time = now

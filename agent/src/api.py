@@ -163,3 +163,32 @@ def mark_announcement_read(announcement_id):
         )
     except Exception:
         pass
+
+
+# ---- Security and Screenshots ----
+def send_security_alert(alert_type, details):
+    token = _get_token()
+    if not token: return
+    try:
+        requests.post(
+            f"{BASE_URL}/security",
+            json={"type": alert_type, "details": details},
+            headers={"Authorization": f"Bearer {token}"}
+        )
+    except Exception:
+        pass
+
+def send_screenshot(image_bytes, window_title):
+    token = _get_token()
+    if not token: return
+    try:
+        files = {'image': ('screenshot.jpg', image_bytes, 'image/jpeg')}
+        data = {'windowTitle': windowTitle}
+        requests.post(
+            f"{BASE_URL}/screenshots",
+            files=files,
+            data=data,
+            headers={"Authorization": f"Bearer {token}"}
+        )
+    except Exception:
+        pass

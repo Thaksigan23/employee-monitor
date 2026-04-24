@@ -19,6 +19,8 @@ import Shifts from "./pages/Shifts";
 import BlockedApps from "./pages/BlockedApps";
 import Leaderboard from "./pages/Leaderboard";
 import Reports from "./pages/Reports";
+import Screenshots from "./pages/Screenshots";
+import Security from "./pages/Security";
 import Layout from "./components/Layout";
 
 function RequireAuth({ children }) {
@@ -43,6 +45,7 @@ function AppRoutes() {
 
         <Route path="/dashboard" element={<RequireAuth><Layout><Dashboard /></Layout></RequireAuth>} />
         <Route path="/activity" element={<RequireAuth><Layout><Activity /></Layout></RequireAuth>} />
+        <Route path="/screenshots" element={<RequireAuth><Layout><Screenshots /></Layout></RequireAuth>} />
         <Route path="/settings" element={<RequireAuth><Layout><Settings /></Layout></RequireAuth>} />
         <Route path="/timesheets" element={<RequireAuth><Layout><Timesheets /></Layout></RequireAuth>} />
         <Route path="/chat" element={<RequireAuth><Layout><Chat /></Layout></RequireAuth>} />
@@ -55,6 +58,7 @@ function AppRoutes() {
         <Route path="/users" element={<RequireAuth><RequireAdmin><Layout><Users /></Layout></RequireAdmin></RequireAuth>} />
         <Route path="/audit" element={<RequireAuth><RequireAdmin><Layout><AuditLogs /></Layout></RequireAdmin></RequireAuth>} />
         <Route path="/blocked-apps" element={<RequireAuth><RequireAdmin><Layout><BlockedApps /></Layout></RequireAdmin></RequireAuth>} />
+        <Route path="/security" element={<RequireAuth><RequireAdmin><Layout><Security /></Layout></RequireAdmin></RequireAuth>} />
       </Routes>
     </BrowserRouter>
   );

@@ -47,7 +47,8 @@ export default function Layout({ children }) {
 
         <nav className="space-y-2 flex-1">
           <MenuItem path="/dashboard" icon="📊" label="Dashboard" />
-          <MenuItem path="/activity" icon="🕒" label="Activity" />
+          <MenuItem path="/activity" icon="🕒" label="Activity Logs" />
+          <MenuItem path="/screenshots" icon="📸" label="Screenshots" />
           <MenuItem path="/timesheets" icon="📑" label="Timesheets" />
           <MenuItem path="/shifts" icon="📅" label="Shifts" />
           <MenuItem path="/leaderboard" icon="🏆" label="Leaderboard" />
@@ -56,6 +57,7 @@ export default function Layout({ children }) {
           <MenuItem path="/leaves" icon="🏖️" label="Leaves" />
           <MenuItem path="/announcements" icon="📢" label="Announcements" />
           {isAdmin && <MenuItem path="/blocked-apps" icon="🚫" label="Blocked Apps" />}
+          {isAdmin && <MenuItem path="/security" icon="🛡️" label="Security Center" />}
           {isAdmin && <MenuItem path="/users" icon="👥" label="Users" />}
           {isAdmin && <MenuItem path="/audit" icon="🔍" label="Audit Logs" />}
           <MenuItem path="/settings" icon="⚙️" label="Settings" />
