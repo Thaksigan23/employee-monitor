@@ -125,4 +125,4 @@ This software is intended for legitimate workforce management and productivity e
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
-Built with ❤️ for better team productivity.
+Built with Thaksi❤️ for better team productivity.
