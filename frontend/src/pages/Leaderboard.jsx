@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { fetchLeaderboard } from "../services/api";
 
 const MEDALS = ["🥇", "🥈", "🥉"];
@@ -14,6 +14,7 @@ function ScoreBar({ score, color }) {
 export default function Leaderboard() {
   const [data, setData] = useState([]);
   const [period, setPeriod] = useState("week");
+  const [deptFilter, setDeptFilter] = useState("ALL");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -28,19 +29,28 @@ export default function Leaderboard() {
 
   useEffect(() => { load(); }, [period]);
 
-  const topThree = data.slice(0, 3);
-  const rest = data.slice(3);
+  const departments = useMemo(() => ["ALL", ...new Set(data.map((d) => d.department).filter(Boolean))], [data]);
+  const filtered = deptFilter === "ALL" ? data : data.filter((d) => d.department === deptFilter);
+
+  const topThree = filtered.slice(0, 3);
+  const rest = filtered.slice(3);
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <h1 className="text-3xl font-bold">🏆 Team Leaderboard</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {["day", "week", "month"].map((p) => (
-            <button key={p} onClick={() => setPeriod(p)} className={`px-4 py-2 rounded-lg font-medium capitalize transition ${period === p ? "bg-green-500 text-white" : "bg-gray-200 dark:bg-gray-700"}`}>
+            <button key={p} onClick={() => setPeriod(p)} className={`px-4 py-2 rounded-lg font-medium capitalize transition ${period === p ? "bg-green-500 text-white" : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"}`}>
               {p}
             </button>
           ))}
+          {departments.length > 1 && (
+            <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}
+              className="border rounded-lg px-3 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none">
+              {departments.map((d) => <option key={d} value={d}>{d === "ALL" ? "All Departments" : d}</option>)}
+            </select>
+          )}
         </div>
       </div>
 

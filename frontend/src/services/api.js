@@ -587,3 +587,16 @@ export async function resolveSecurityAlert(id) {
   if (!res.ok) throw new Error("Failed to resolve security alert");
   return res.json();
 }
+
+// ==========================
+// LEAVE BALANCE
+// ==========================
+
+export async function fetchLeaveBalance(userId = null) {
+  const token = localStorage.getItem("token");
+  let url = `${API_BASE}/api/leaves/balance`;
+  if (userId) url += `?userId=${userId}`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error("Failed to fetch leave balance");
+  return res.json();
+}

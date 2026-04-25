@@ -21,13 +21,23 @@ exports.sendMessage = async (req, res) => {
       text: text.trim(),
     });
 
-    const populated = await message.populate("sender", "email role");
+    const populated = await message.populate([
+      { path: "sender", select: "email role" },
+      { path: "receiver", select: "email role" },
+    ]);
+
+    // Emit to receiver via Socket.IO if connected
+    const io = req.app.get("io");
+    if (io) {
+      io.to(`user:${receiverId}`).emit("new_message", populated);
+    }
 
     res.status(201).json(populated);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Get conversation between current user and another user
 exports.getConversation = async (req, res) => {

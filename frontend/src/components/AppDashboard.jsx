@@ -25,7 +25,7 @@ function StatusBadge({ status }) {
   );
 }
 
-function StatCard({ label, value, color, icon }) {
+function StatCard({ label, value, color, icon, trend }) {
   return (
     <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center gap-4">
       <div
@@ -33,12 +33,14 @@ function StatCard({ label, value, color, icon }) {
       >
         <span className="text-2xl">{icon}</span>
       </div>
-
-      <div>
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          {label}
-        </div>
+      <div className="flex-1">
+        <div className="text-sm text-gray-500 dark:text-gray-400">{label}</div>
         <div className="text-3xl font-bold">{value}</div>
+        {trend !== undefined && (
+          <div className={`text-xs mt-0.5 ${trend > 0 ? "text-green-500" : trend < 0 ? "text-red-500" : "text-gray-400"}`}>
+            {trend > 0 ? "▲" : trend < 0 ? "▼" : "—"} vs last poll
+          </div>
+        )}
       </div>
     </div>
   );
@@ -291,44 +293,43 @@ export default function AppDashboard() {
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-        <h1 className="text-3xl font-bold">
-          Employee Activity Dashboard
-        </h1>
+        <div>
+          <h1 className="text-3xl font-bold">Employee Activity Dashboard</h1>
+          <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              Live · auto-refreshes every 5s
+            </span>
+          </div>
+        </div>
 
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center flex-wrap">
 
           {isAdmin && (
-
             <select
               value={selectedEmployee}
               onChange={(e) => setSelectedEmployee(e.target.value)}
-              className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800"
+              className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
             >
-
               <option value="ALL">All Employees</option>
-
               {employees.map(([id, email]) => (
-                <option key={id} value={id}>
-                  {email}
-                </option>
+                <option key={id} value={id}>{email}</option>
               ))}
-
             </select>
-
           )}
 
           <button
             onClick={exportToCSV}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
           >
-            Export CSV
+            📥 Export CSV
           </button>
 
           <button
             onClick={handleClear}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
           >
-            Clear Activity
+            🗑️ Clear
           </button>
 
         </div>
